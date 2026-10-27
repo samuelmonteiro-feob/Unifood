@@ -1,1 +1,0 @@
-caraio porra cu bosta
