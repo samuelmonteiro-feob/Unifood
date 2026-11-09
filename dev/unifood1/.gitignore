@@ -46,3 +46,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# dados do banco (senha)
+lib/banco/config.dart

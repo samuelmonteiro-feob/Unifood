@@ -14,6 +14,7 @@ enum LocalAlimentacao {
 
 
 class Estabelecimento {
+  int? id; // id do banco
   String _nome;
   final LocalAlimentacao _local;
   final List<Produto> _produtos = [];
