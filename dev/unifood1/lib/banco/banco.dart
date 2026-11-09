@@ -173,8 +173,8 @@ Future<void> atualizarAberto(Estabelecimento estabelecimento) async {
 // ---------------- PEDIDOS ----------------
 
 // salva o pedido, os itens e coloca na fila de retirada
-// retorna o numero do pedido (ex: 101813)
-Future<int> salvarPedido(Pedido pedido, {String? cliente}) async {
+// retorna o numero do pedido (ex: 101813) e a senha de retirada
+Future<Map<String, dynamic>> salvarPedido(Pedido pedido, {String? cliente}) async {
   var conn = await conectar();
   int numero = 0;
   var senhaRetirada = gerarSenha();
@@ -246,7 +246,7 @@ Future<int> salvarPedido(Pedido pedido, {String? cliente}) async {
     );
   });
 
-  return numero;
+  return {'numero': numero, 'senha': senhaRetirada};
 }
 
 Future<void> atualizarStatusPedido(int numero, StatusPedido status) async {

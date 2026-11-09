@@ -29,8 +29,9 @@ void main() async {
     pedido.confirmar();
     print(pedido.gerarResumo());
 
-    var numero = await salvarPedido(pedido);
-    print('pedido salvo no banco com numero $numero');
+    var salvo = await salvarPedido(pedido);
+    int numero = salvo['numero'];
+    print('pedido salvo no banco com numero $numero e senha ${salvo['senha']}');
 
     await atualizarStatusPedido(numero, StatusPedido.emPreparo);
     print('status mudou pra em preparo');
