@@ -2,7 +2,7 @@ import 'excecoes.dart';
 import 'formatacao.dart';
 
 class Produto {
-  int? id; // id do banco (null se ainda nao salvou)
+  String? id; // id do banco (uuid), fica null se ainda nao salvou
   String _nome;
   double _preco;
   int _tempoPreparoMin;

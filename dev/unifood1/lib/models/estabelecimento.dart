@@ -6,7 +6,7 @@ enum LocalAlimentacao {
   praca1('Praça de Alimentação 1'),
   praca2PredioD('Praça de Alimentação 2 - Prédio D'),
   praca2PredioE('Praça de Alimentação 2 - Prédio E'),
-  predioF('Prédio F');
+  predioF('Praça de Alimentação 2 - Prédio F');
 
   final String descricao;
   const LocalAlimentacao(this.descricao);
@@ -14,7 +14,8 @@ enum LocalAlimentacao {
 
 
 class Estabelecimento {
-  int? id; // id do banco
+  String? id; // id do banco (uuid)
+  String? slug; // nome da loja no banco, ex: mr-john-pizzas
   String _nome;
   final LocalAlimentacao _local;
   final List<Produto> _produtos = [];
