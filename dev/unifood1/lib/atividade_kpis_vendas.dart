@@ -1,28 +1,15 @@
-// ATIVIDADE - Aplicacao final da logica
-// programa que processa a lista de vendas do unifood e calcula:
-//   soma (faturamento), media (ticket medio), maior venda e menor venda
-// depois compara com os mesmos indicadores calculados pelo banco de dados,
-// que sao os numeros que vao aparecer no dashboard do projeto
-//
-// rodar com: dart run lib/atividade_kpis_vendas.dart
-// (a parte 1 roda sem banco, a parte 2 precisa do lib/banco/config.dart)
-//
-// OBS sobre os centavos: no computador 0.1 + 0.2 da 0.30000000000000004,
-// entao somar muitos valores em double pode dar diferenca de centavo.
-// por isso os calculos sao feitos em CENTAVOS (numero inteiro) e so no final
-// volta pra reais. assim o resultado bate certinho com o banco.
+// Integrantes:
+// Erick Araujo Moraes - RA 26000855
+// Samuel David Monteiro - RA 26000806
 
 import 'package:postgres/postgres.dart';
 
 import 'banco/banco.dart';
 import 'models/formatacao.dart';
 
-// ---------------- FUNCOES DE CALCULO ----------------
-
 int paraCentavos(double valor) => (valor * 100).round();
 double paraReais(int centavos) => centavos / 100;
 
-// soma de todas as vendas
 double somarVendas(List<double> vendas) {
   int total = 0;
   for (var venda in vendas) {
@@ -31,10 +18,9 @@ double somarVendas(List<double> vendas) {
   return paraReais(total);
 }
 
-// media = soma / quantidade (arredondada no centavo)
 double mediaVendas(List<double> vendas) {
   if (vendas.isEmpty) {
-    return 0; // sem venda nao tem media, evita dividir por zero
+    return 0;
   }
   int total = 0;
   for (var venda in vendas) {
@@ -44,7 +30,6 @@ double mediaVendas(List<double> vendas) {
   return paraReais(media);
 }
 
-// maior venda: comeca com a primeira e vai trocando se achar uma maior
 double maiorVenda(List<double> vendas) {
   if (vendas.isEmpty) {
     return 0;
@@ -58,7 +43,6 @@ double maiorVenda(List<double> vendas) {
   return maior;
 }
 
-// menor venda: mesma ideia do maior, so que ao contrario
 double menorVenda(List<double> vendas) {
   if (vendas.isEmpty) {
     return 0;
@@ -72,13 +56,9 @@ double menorVenda(List<double> vendas) {
   return menor;
 }
 
-// ---------------- VALIDACAO ----------------
-
 int acertos = 0;
 int erros = 0;
 
-// compara o valor calculado no dart com o valor esperado (ou com o do banco)
-// compara em centavos pra nao ter problema de casa decimal
 void conferir(String nome, double calculado, double esperado, {String rotulo = 'esperado'}) {
   var ok = paraCentavos(calculado) == paraCentavos(esperado);
   if (ok) {
@@ -100,44 +80,29 @@ void mostrarKpis(String titulo, List<double> vendas) {
   print('    Menor venda:          ${formatarReais(menorVenda(vendas))}');
 }
 
-// ---------------- PARTE 1: LISTA FIXA (conta feita na mao) ----------------
-
 void parte1() {
   print('==============================================');
   print(' PARTE 1 - lista de vendas fixa (sem banco)');
   print('==============================================');
 
-  // 10 vendas de exemplo (valores parecidos com os do banco)
   var vendas = [17.00, 24.50, 16.00, 8.75, 32.90, 12.30, 45.00, 6.60, 21.15, 9.80];
   print('  Vendas: $vendas\n');
   mostrarKpis('Indicadores calculados:', vendas);
 
-  // resultados calculados na mao (calculadora):
-  // soma  = 17.00 + 24.50 + 16.00 + 8.75 + 32.90 + 12.30 + 45.00 + 6.60 + 21.15 + 9.80 = 194.00
-  // media = 194.00 / 10 = 19.40
-  // maior = 45.00
-  // menor = 6.60
   print('\n  Conferindo com a conta feita na mao:');
   conferir('Soma', somarVendas(vendas), 194.00);
   conferir('Media', mediaVendas(vendas), 19.40);
   conferir('Maior', maiorVenda(vendas), 45.00);
   conferir('Menor', menorVenda(vendas), 6.60);
 
-  // casos especiais
   print('\n  Casos especiais:');
   conferir('Lista vazia', somarVendas([]), 0);
   conferir('Media vazia', mediaVendas([]), 0);
   conferir('So 1 venda', mediaVendas([12.34]), 12.34);
-  // 0.1 + 0.2 em double daria 0.30000000000000004, em centavos da 0.30 certinho
   conferir('0,10 + 0,20', somarVendas([0.10, 0.20]), 0.30);
-  // media que precisa arredondar: 10 / 3 = 3.333... -> 3.33
   conferir('Media 10/3', mediaVendas([3.33, 3.33, 3.34]), 3.33);
 }
 
-// ---------------- PARTE 2: VENDAS DO BANCO x DASHBOARD ----------------
-
-// busca a lista de vendas: o total de cada pedido que foi retirado
-// (pedido cancelado nao e venda, e pedido em andamento ainda nao foi concluido)
 Future<List<double>> buscarVendas(Connection conn, {String? loja}) async {
   var sql = "SELECT total::float8 FROM negocio_teste.pedidos WHERE situacao = 'retirado'";
   Map<String, dynamic> parametros = {};
@@ -154,7 +119,6 @@ Future<List<double>> buscarVendas(Connection conn, {String? loja}) async {
   return vendas;
 }
 
-// os indicadores do jeito que o dashboard calcula: direto no banco com SUM, AVG, MAX e MIN
 Future<Map<String, double>> buscarKpisDashboard(Connection conn, {String? loja}) async {
   var sql = 'SELECT count(*)::float8, coalesce(sum(total), 0)::float8, coalesce(round(avg(total), 2), 0)::float8, '
       "coalesce(max(total), 0)::float8, coalesce(min(total), 0)::float8 FROM negocio_teste.pedidos WHERE situacao = 'retirado'";
@@ -202,14 +166,12 @@ Future<void> parte2() async {
     return;
   }
 
-  // geral (todas as lojas)
   var vendas = await buscarVendas(conn);
   print('');
   mostrarKpis('Indicadores gerais (todas as lojas):', vendas);
   print('\n  Comparando com o dashboard (calculo do banco):');
   compararComDashboard(vendas, await buscarKpisDashboard(conn));
 
-  // por loja
   var lojas = await conn.execute('SELECT slug, nome FROM negocio_teste.lojas ORDER BY nome');
   for (var loja in lojas) {
     var slug = loja[0] as String;
@@ -223,8 +185,6 @@ Future<void> parte2() async {
 
   await desconectar();
 }
-
-// ---------------- MAIN ----------------
 
 Future<void> main() async {
   parte1();
