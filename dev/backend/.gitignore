@@ -1,0 +1,5 @@
+# credenciais do banco (NUNCA mandar pro github)
+.env
+
+# arquivos gerados pelo dart
+.dart_tool/

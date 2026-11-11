@@ -6,6 +6,8 @@ App de pedidos interno da UNIFEOB (retirada no balcão das praças de alimentaç
 - Estilo do código: simples, "de iniciante" (funções soltas, nomes e comentários em português, sem acento nos comentários). Funcional, mas sem arquitetura elaborada.
 - Senha do banco fica em `dev/unifood1/lib/banco/config.dart` (no .gitignore). Nunca commitar senha.
 - Por enquanto a interface é pelo terminal: `dart run lib/app_terminal.dart`.
+- Backend Dart separado em `dev/backend` (banco no Neon). Conecta com o usuário `unifood_backend` (membro do grupo `unifood_api`), URL no `.env` (no .gitignore, modelo em `.env.exemplo`). Credenciais do banco ficam SÓ no backend, nunca no app Flutter.
+- O grupo `unifood_api` NÃO tem acesso aos schemas `negocio_teste`/`negocio`: tem acesso a `identity`, `merchant`, `catalog`, `sales`, `payments`, `marketing`, `engagement`, `campus`, `platform`, `common`.
 
 ## Regras importantes
 Leia `docs/ORIENTACOES.md` antes de mexer em cadastro/login, RA ou pedidos. Resumo:

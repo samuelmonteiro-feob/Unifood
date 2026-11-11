@@ -1,0 +1,11 @@
+name: unifood_backend
+description: Backend do Unifood (API e acesso ao banco Neon PostgreSQL).
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  postgres: ^3.6.0
+  dotenv: ^4.2.0
