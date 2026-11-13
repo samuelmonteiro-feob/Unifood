@@ -25,7 +25,10 @@ Future<Connection> conectar() async {
       username: usuario,
       password: senha,
     ),
-    settings: ConnectionSettings(sslMode: SslMode.disable),
+    // banco no pc (localhost) nao usa ssl, banco na nuvem (neon) exige ssl
+    settings: ConnectionSettings(
+      sslMode: (host == 'localhost' || host == '127.0.0.1' || host == '10.0.2.2') ? SslMode.disable : SslMode.require,
+    ),
   );
   print('conectou no banco');
   return conexao!;
